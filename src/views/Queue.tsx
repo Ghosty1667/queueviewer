@@ -1,63 +1,19 @@
 import React, { useState } from 'react';
 
-const Queue = () => {
-    const [queueItems, setQueueItems] = useState([
-        {
-            thumbnail: 'http://placekitten.com/200/300',
-            duration: '3:45',
-            name: 'Video 1',
-        },
-        {
-            thumbnail: 'http://placekitten.com/200/300',
-            duration: '2:30',
-            name: 'Video 2',
-        },
-        {
-            thumbnail: 'http://placekitten.com/200/300',
-            duration: '4:15',
-            name: 'Video 3',
-        },
-        {
-            thumbnail: 'http://placekitten.com/200/300',
-            duration: '4:15',
-            name: 'Video 4',
-        },
-        {
-            thumbnail: 'http://placekitten.com/200/300',
-            duration: '4:15',
-            name: 'Video 4',
-        },
-        {
-            thumbnail: 'http://placekitten.com/200/300',
-            duration: '4:15',
-            name: 'Video 4',
-        },
-        {
-            thumbnail: 'http://placekitten.com/200/300',
-            duration: '4:15',
-            name: 'Video 4',
-        },
-        {
-            thumbnail: 'http://placekitten.com/200/300',
-            duration: '4:15',
-            name: 'Video 4',
-        },
-        {
-            thumbnail: 'http://placekitten.com/200/300',
-            duration: '4:15',
-            name: 'Video 4',
-        },
-        {
-            thumbnail: 'http://placekitten.com/200/300',
-            duration: '4:15',
-            name: 'Video 4',
-        },
-        {
-            thumbnail: 'http://placekitten.com/200/300',
-            duration: '4:15',
-            name: 'Video 4',
-        },
-    ]);
+
+interface Queue {
+    QueueItems: QueueItem[];
+}
+
+interface QueueItem {
+    thumbnail: string;
+    duration: string;
+    name: string;
+    url?: string;
+}
+
+const Queue: React.FC<Queue> = ({ QueueItems }) => {
+    const [queueItems, setQueueItems] = useState(QueueItems);
 
     const handleDrag = (index: number, newIndex: number) => {
         const updatedQueueItems = [...queueItems];
@@ -74,6 +30,7 @@ const Queue = () => {
 
     return (
         <div className="flex w-[25%] flex-col h-screen overflow-y-auto">
+            <h1 className="bg-gray-700 text-white py-2 px-4 text-lg font-semibold">Up next</h1>
             {queueItems.map((item, index) => (
                 <button
                     key={index}
@@ -101,9 +58,9 @@ const Queue = () => {
                         <p>{item.duration}</p>
                         <p>{item.name}</p>
                     </div>
-                    <button onClick={() => handleDelete(index)} className="btn btn-danger">
+                    <div onClick={() => handleDelete(index)} className="btn btn-danger hover:text-red-600">
                         <i className="bi bi-x"></i>
-                    </button>
+                    </div>
                 </button>
             ))}
         </div>
