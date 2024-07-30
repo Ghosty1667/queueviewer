@@ -1,8 +1,38 @@
 import React, { useEffect, useRef } from 'react';
 
+
+import { io, Socket } from 'socket.io-client';
+
+
+
+
 const Player: React.FC = () => {
+    const socket: Socket = io('your_socket_server_url');
+
+    // Example event listener
+    socket.on('connect', () => {
+        console.log('Connected to the WebSocket server');
+    });
+
+    // Example event emitter
+    const sendMessage = (message: string) => {
+        socket.emit('message', message);
+    };
+
+    // Example event listener
+    socket.on('message', (message: string) => {
+        console.log('Received message:', message);
+    });
+
+    // Clean up the socket connection on component unmount
+    useEffect(() => {
+        return () => {
+            socket.disconnect();
+        };
+    }, []);
+
     const iframeRef = useRef<HTMLIFrameElement>(null)
-    const playerRef = useRef<YT.Player|null>(null)
+    const playerRef = useRef<YT.Player | null>(null)
 
     useEffect(() => {
         const tag = document.createElement('script');
@@ -13,7 +43,7 @@ const Player: React.FC = () => {
         }
         (window as any).onYouTubeIframeAPIReady = () => {
             if (iframeRef.current) {
-                playerRef.current = new YT.Player(iframeRef.current, {events: {onReady: OnPlayerReady}});
+                playerRef.current = new YT.Player(iframeRef.current, { events: { onReady: OnPlayerReady } });
             }
         }
     }, []);
