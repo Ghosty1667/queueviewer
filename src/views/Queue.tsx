@@ -101,9 +101,9 @@ const Queue = () => {
                         <p>{item.duration}</p>
                         <p>{item.name}</p>
                     </div>
-                    <button onClick={() => handleDelete(index)} className="btn btn-danger">
+                    <div onClick={() => handleDelete(index)} className="btn btn-danger">
                         <i className="bi bi-x"></i>
-                    </button>
+                    </div>
                 </button>
             ))}
         </div>
