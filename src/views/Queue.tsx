@@ -66,12 +66,18 @@ const Queue = () => {
         setQueueItems(updatedQueueItems);
     };
 
+    const handleDelete = (index: number) => {
+        const updatedQueueItems = [...queueItems];
+        updatedQueueItems.splice(index, 1);
+        setQueueItems(updatedQueueItems);
+    };
+
     return (
-        <div className="flex w-[30%] flex-col ">
+        <div className="flex w-[25%] flex-col h-screen overflow-y-auto">
             {queueItems.map((item, index) => (
                 <button
                     key={index}
-                    className="flex items-center space-x-4 bg-gray-700 hover:bg-gray-500 text-white  p-2"
+                    className="flex items-center justify-between space-x-4 bg-gray-700 hover:bg-gray-500 text-white p-2"
                     draggable
                     onDragStart={(e) => {
                         e.dataTransfer.setData('text/plain', index.toString());
@@ -95,6 +101,9 @@ const Queue = () => {
                         <p>{item.duration}</p>
                         <p>{item.name}</p>
                     </div>
+                    <button onClick={() => handleDelete(index)} className="btn btn-danger">
+                        <i className="bi bi-x"></i>
+                    </button>
                 </button>
             ))}
         </div>

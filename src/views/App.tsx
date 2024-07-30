@@ -11,9 +11,9 @@ const container = document.getElementById('root');
 if (container) {
     const root = createRoot(container);
     root.render(
-        <div className="flex flex-col ">
+        <div className="flex flex-col h-screen">
             <Navbar />
-            <div className="flex">
+            <div className="flex overflow-hidden">
                 <Player />
                 <Queue />
             </div>

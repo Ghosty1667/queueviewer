@@ -3,7 +3,7 @@ import React from 'react';
 const Player: React.FC = () => {
     return (
 
-        <div className="w-full aspect-video ">
+        <div className="w-full max-h-screen aspect-video overflow-hidden">
             <iframe
                 src="https://www.youtube.com/embed/7lwkojqTtO0?si=UmmWMasQPfasO91Q"
                 title="YouTube video player"
