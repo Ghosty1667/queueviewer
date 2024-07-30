@@ -7,7 +7,7 @@ import { io, Socket } from 'socket.io-client';
 
 
 const Player: React.FC = () => {
-    const socket: Socket = io('your_socket_server_url');
+    const socket: Socket = io('http://localhost:3000/');
 
     // Example event listener
     socket.on('connect', () => {
@@ -20,7 +20,7 @@ const Player: React.FC = () => {
     };
 
     // Example event listener
-    socket.on('message', (message: string) => {
+    socket.on('message-back', (message: string) => {
         console.log('Received message:', message);
     });
 
@@ -55,6 +55,7 @@ const Player: React.FC = () => {
 
     return (
         <div className="w-full max-h-screen aspect-video overflow-hidden">
+        <button onClick={() => sendMessage("TEst")}>YEAH WOO</button>
             <iframe
                 ref={iframeRef}
                 src="https://www.youtube.com/embed/7lwkojqTtO0?enablejsapi=1"
