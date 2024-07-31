@@ -1,13 +1,21 @@
 import React, { useEffect, useRef } from 'react';
-
-
 import { io, Socket } from 'socket.io-client';
 
 
+interface Player {
+    currentVideo: string;
+}
+
+declare global {
+    interface Window {
+        SOCKET_URL?: string;
+    }
+}
+
+const Player: React.FC<Player> = ({ currentVideo }) => {
 
 
-const Player: React.FC = () => {
-    const socket: Socket = io('http://localhost:3000/');
+    const socket: Socket = io(window.SOCKET_URL || 'http://localhost:3000/');
 
     // Example event listener
     socket.on('connect', () => {
@@ -55,10 +63,10 @@ const Player: React.FC = () => {
 
     return (
         <div className="w-full max-h-screen aspect-video overflow-hidden">
-        <button onClick={() => sendMessage("TEst")}>YEAH WOO</button>
+            <button onClick={() => sendMessage("TEst")}>YEAH WOO</button>
             <iframe
                 ref={iframeRef}
-                src="https://www.youtube.com/embed/7lwkojqTtO0?enablejsapi=1"
+                src={currentVideo + `?enablejsapi=1`}
                 title="YouTube video player"
                 frameBorder={0}
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
@@ -66,7 +74,7 @@ const Player: React.FC = () => {
                 allowFullScreen
                 className="w-full h-full"
             ></iframe>
-        </div>
+        </div >
     );
 };
 
