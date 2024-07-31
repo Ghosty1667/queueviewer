@@ -1,43 +1,13 @@
 import React, { useEffect, useRef } from 'react';
-import { io, Socket } from 'socket.io-client';
 
 
 interface Player {
     currentVideo: string;
 }
 
-declare global {
-    interface Window {
-        SOCKET_URL?: string;
-    }
-}
 
 const Player: React.FC<Player> = ({ currentVideo }) => {
 
-
-    const socket: Socket = io(window.SOCKET_URL || 'http://localhost:3000/');
-
-    // Example event listener
-    socket.on('connect', () => {
-        console.log('Connected to the WebSocket server');
-    });
-
-    // Example event emitter
-    const sendMessage = (message: string) => {
-        socket.emit('message', message);
-    };
-
-    // Example event listener
-    socket.on('message-back', (message: string) => {
-        console.log('Received message:', message);
-    });
-
-    // Clean up the socket connection on component unmount
-    useEffect(() => {
-        return () => {
-            socket.disconnect();
-        };
-    }, []);
 
     const iframeRef = useRef<HTMLIFrameElement>(null)
     const playerRef = useRef<YT.Player | null>(null)
@@ -63,7 +33,6 @@ const Player: React.FC<Player> = ({ currentVideo }) => {
 
     return (
         <div className="w-full max-h-screen aspect-video overflow-hidden">
-            <button onClick={() => sendMessage("TEst")}>YEAH WOO</button>
             <iframe
                 ref={iframeRef}
                 src={currentVideo + `?enablejsapi=1`}

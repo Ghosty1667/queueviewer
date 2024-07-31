@@ -1,16 +1,33 @@
 import { createRoot } from 'react-dom/client';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Player from './Player';
 import Navbar from './Navbar';
 import Queue from './Queue';
+import useSocket from './Socket';
 
 // Get the container element
 const container = document.getElementById('root');
 
+declare global {
+    interface Window {
+        SOCKET_URL?: string;
+    }
+}
+
+
+
+
 
 const App: React.FC = () => {
 
-    const [currentVideo, setCurretVideo] = useState('https://www.youtube.com/embed/9bZkp7q19f0');
+    const { data, loading } = useSocket(window.SOCKET_URL || 'http://localhost:3000/');
+    const [currentVideo, setCurrentVideo] = useState<string | null>(null);
+
+    useEffect(() => {
+        if (data && data.Queue.QueueItems.length > 0) {
+            setCurrentVideo(data.Queue.QueueItems[0].url || null);
+        }
+    }, [data]);
 
     const QueueItems = [
         {
@@ -49,10 +66,14 @@ const App: React.FC = () => {
     return (
         <div className="flex flex-col h-screen">
             <Navbar />
-            <div className="flex overflow-hidden">
-                <Player currentVideo={currentVideo} />
-                <Queue QueueItems={QueueItems} />
-            </div>
+            {loading ? (<p>Loading</p>)
+                : (
+                    data && (<div className="flex overflow-hidden">
+                        <Player currentVideo={currentVideo} />
+                        <Queue QueueItems={data.Queue.QueueItems} />
+                    </div>)
+                )}
+
         </div>
     )
 }
