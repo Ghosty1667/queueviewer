@@ -43,7 +43,7 @@ const QueueItems: QueueItem[] = [
     {
         id: 0,
         thumbnail: 'http://placekitten.com/200/300',
-        url: "https://www.youtube.com/embed/ZaxUZH0cbhM?si=kXxYziYygWmuykb2",
+        url: "ZaxUZH0cbhM?si=kXxYziYygWmuykb2",
         name: 'Video 1',
     },
     {
@@ -97,7 +97,7 @@ const testQueue: Queue = {
     activeVideo: {
         item: QueueItems[0],
         isPaused: false,
-        timestamp: 0
+        timestamp: 20
     }
 }
 

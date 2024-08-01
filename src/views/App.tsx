@@ -12,8 +12,8 @@ const container = document.getElementById('root');
 
 const App: React.FC = () => {
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { queue, currentVideo, loading } = (import.meta as any).env.VITE_DUMMY_DATA ? useDummySocket() : useSocket((import.meta as any).env.SOCKET_URL || 'http://localhost:3000/') as any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any 
+    const { queue, currentVideo, loading } = (import.meta as any).env.VITE_DUMMY_DATA ? useDummySocket() : useSocket((import.meta as any).env.SOCKET_URL || 'http://localhost:3000/');
 
     return (
         <div className="flex flex-col h-screen">
