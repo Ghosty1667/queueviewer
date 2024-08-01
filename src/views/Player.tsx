@@ -1,12 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
 
-import { ActiveVideo, QueueItem } from './types';
+import { ActiveVideo } from './types';
 
 
 const Player: React.FC<ActiveVideo> = ({ item, isPaused, timestamp }) => {
     const iframeRef = useRef<HTMLIFrameElement>(null)
     const playerRef = useRef<YT.Player | null>(null)
-    const [currentVideo, setCurrentVideo] = useState<QueueItem | null>(item);
 
     useEffect(() => {
         const tag = document.createElement('script');
@@ -18,7 +17,7 @@ const Player: React.FC<ActiveVideo> = ({ item, isPaused, timestamp }) => {
         (window as any).onYouTubeIframeAPIReady = () => {
             if (iframeRef.current) {
                 playerRef.current = new YT.Player(iframeRef.current, {
-                    videoId: currentVideo.url,
+                    videoId: item.url,
                     playerVars: {
                         origin: window.location.origin,
                         autoplay: 1,
@@ -27,7 +26,18 @@ const Player: React.FC<ActiveVideo> = ({ item, isPaused, timestamp }) => {
                 });
             }
         }
+    }, []);
+
+
+    useEffect(() => {
+        if (playerRef.current) {
+            playerRef.current.loadVideoById(item.url);
+        }
     }, [item.url]);
+
+
+
+
 
 
     const OnPlayerReady = (event: YT.PlayerEvent) => {
