@@ -1,19 +1,11 @@
 import React, { useState } from 'react';
 
+import { Queue, QueueItem } from './types';
 
-interface Queue {
-    QueueItems: QueueItem[];
-}
+const QueueList: React.FC<{ items: QueueItem[] }> = ({ items }) => {
+    const [queueItems, setQueueItems] = useState(items);
 
-interface QueueItem {
-    thumbnail: string;
-    duration: string;
-    name: string;
-    url?: string;
-}
 
-const Queue: React.FC<Queue> = ({ QueueItems }) => {
-    const [queueItems, setQueueItems] = useState(QueueItems);
 
     const handleDrag = (index: number, newIndex: number) => {
         const updatedQueueItems = [...queueItems];
@@ -55,7 +47,7 @@ const Queue: React.FC<Queue> = ({ QueueItems }) => {
                 >
                     <img src={item.thumbnail} alt="Thumbnail" className="w-16 h-16" />
                     <div>
-                        <p>{item.duration}</p>
+                        <p>buh</p>
                         <p>{item.name}</p>
                     </div>
                     <div onClick={() => handleDelete(index)} className="btn btn-danger hover:text-red-600">
@@ -67,4 +59,4 @@ const Queue: React.FC<Queue> = ({ QueueItems }) => {
     );
 };
 
-export default Queue;
+export default QueueList;

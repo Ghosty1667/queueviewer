@@ -1,44 +1,9 @@
-import React, { useEffect, useRef } from 'react';
-import { io, Socket } from 'socket.io-client';
+import React, { useEffect, useRef, useState } from 'react';
+
+import { ActiveVideo } from './types';
 
 
-interface Player {
-    currentVideo: string;
-}
-
-declare global {
-    interface Window {
-        SOCKET_URL?: string;
-    }
-}
-
-const Player: React.FC<Player> = ({ currentVideo }) => {
-
-
-    const socket: Socket = io(window.SOCKET_URL || 'http://localhost:3000/');
-
-    // Example event listener
-    socket.on('connect', () => {
-        console.log('Connected to the WebSocket server');
-    });
-
-    // Example event emitter
-    const sendMessage = (message: string) => {
-        socket.emit('message', message);
-    };
-
-    // Example event listener
-    socket.on('message-back', (message: string) => {
-        console.log('Received message:', message);
-    });
-
-    // Clean up the socket connection on component unmount
-    useEffect(() => {
-        return () => {
-            socket.disconnect();
-        };
-    }, []);
-
+const Player: React.FC<ActiveVideo> = ({ item, isPaused, timestamp }) => {
     const iframeRef = useRef<HTMLIFrameElement>(null)
     const playerRef = useRef<YT.Player | null>(null)
 
@@ -51,30 +16,40 @@ const Player: React.FC<Player> = ({ currentVideo }) => {
         }
         (window as any).onYouTubeIframeAPIReady = () => {
             if (iframeRef.current) {
-                playerRef.current = new YT.Player(iframeRef.current, { events: { onReady: OnPlayerReady } });
+                playerRef.current = new YT.Player(iframeRef.current, {
+                    videoId: item.url,
+                    playerVars: {
+                        origin: window.location.origin,
+                        autoplay: 1,
+                    },
+                    events: { onReady: OnPlayerReady }
+                });
             }
         }
     }, []);
 
+
+    useEffect(() => {
+        if (playerRef.current) {
+            playerRef.current.loadVideoById(item.url);
+        }
+    }, [item.url]);
+
+
+
     const OnPlayerReady = (event: YT.PlayerEvent) => {
-        console.log("funny :)");
-        console.log(playerRef.current.getVideoUrl() + "TEST");
+        console.log('Player ready');
+        playerRef.current?.seekTo(timestamp);
+
     }
 
     return (
         <div className="w-full max-h-screen aspect-video overflow-hidden">
-            <button onClick={() => sendMessage("TEst")}>YEAH WOO</button>
-            <iframe
+            <div
                 ref={iframeRef}
-                src={currentVideo + `?enablejsapi=1`}
-                title="YouTube video player"
-                frameBorder={0}
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                referrerPolicy="strict-origin-when-cross-origin"
-                allowFullScreen
                 className="w-full h-full"
-            ></iframe>
-        </div >
+            ></div>
+        </div>
     );
 };
 
