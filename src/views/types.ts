@@ -1,7 +1,6 @@
 export interface Queue {
     items: QueueItem[];
     activeVideo: ActiveVideo;
-    timestamp: number;
 }
 
 export interface QueueItem {
