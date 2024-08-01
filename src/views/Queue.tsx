@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 
 import { Queue, QueueItem } from './types';
 
-const QueueList: React.FC<QueueItem[]> = (items) => {
+const QueueList: React.FC<{ items: QueueItem[] }> = ({ items }) => {
     const [queueItems, setQueueItems] = useState(items);
+
+
 
     const handleDrag = (index: number, newIndex: number) => {
         const updatedQueueItems = [...queueItems];
@@ -45,7 +47,7 @@ const QueueList: React.FC<QueueItem[]> = (items) => {
                 >
                     <img src={item.thumbnail} alt="Thumbnail" className="w-16 h-16" />
                     <div>
-                        <p>{item.url}</p>
+                        <p>buh</p>
                         <p>{item.name}</p>
                     </div>
                     <div onClick={() => handleDelete(index)} className="btn btn-danger hover:text-red-600">
