@@ -23,13 +23,7 @@ declare global {
 const App: React.FC = () => {
 
     const { queue, currentVideo, loading } = useSocket(window.SOCKET_URL || 'http://localhost:3000/');
-    const [activeVideo, setActiveVideo] = useState<ActiveVideo | null>(null);
 
-    useEffect(() => {
-        if (queue && queue.items.length > 0) {
-            setActiveVideo(queue.activeVideo);
-        }
-    }, [queue]);
 
     const QueueItems: QueueItem[] = [
         {
@@ -90,7 +84,7 @@ const App: React.FC = () => {
             {loading ? (<p>Loading</p>)
                 : (
                     queue && (<div className="flex overflow-hidden">
-                        <Player {...activeVideo} />
+                        <Player {...currentVideo} />
                         <QueueList {...queue} />
                     </div>)
                 )}

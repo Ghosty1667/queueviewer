@@ -5,8 +5,8 @@ import { Queue, QueueItem, ActiveVideo } from './types';
 
 
 
-const useSocket = (url: string): { queue: Queue | null, loading: boolean, currentVideo: ActiveVideo | undefined } => {
-    const [queue, setQueue] = useState<Queue | null>(null);
+const useSocket = (url: string): { queue: QueueItem[] | null, loading: boolean, currentVideo: ActiveVideo | undefined } => {
+    const [queue, setQueue] = useState<QueueItem[] | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [currentVideo, setCurrentVideo] = useState<ActiveVideo | null>(null);
 
@@ -14,7 +14,7 @@ const useSocket = (url: string): { queue: Queue | null, loading: boolean, curren
         const socket: Socket = io(url);
 
         socket.on('data', (jsonData: Queue) => {
-            setQueue(jsonData);
+            setQueue(jsonData.items);
             setCurrentVideo(jsonData.activeVideo);
             setLoading(false)
         });

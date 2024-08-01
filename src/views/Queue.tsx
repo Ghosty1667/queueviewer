@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 
 import { Queue, QueueItem } from './types';
 
-const QueueList: React.FC<Queue> = ({ items }) => {
+const QueueList: React.FC<QueueItem[]> = (items) => {
     const [queueItems, setQueueItems] = useState(items);
 
     const handleDrag = (index: number, newIndex: number) => {
