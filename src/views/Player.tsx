@@ -1,12 +1,14 @@
 import React, { useEffect, useRef } from 'react';
 
+import { ActiveVideo } from './types';
 
-interface Player {
-    currentVideo: string;
+declare global {
+    interface Window {
+        onYouTubeIframeAPIReady: () => void;
+    }
 }
 
-
-const Player: React.FC<Player> = ({ currentVideo }) => {
+const Player: React.FC<ActiveVideo> = ({ item, isPaused, timestamp }) => {
 
 
     const iframeRef = useRef<HTMLIFrameElement>(null)
@@ -19,7 +21,7 @@ const Player: React.FC<Player> = ({ currentVideo }) => {
         if (firstScriptTag) {
             firstScriptTag.parentNode?.insertBefore(tag, firstScriptTag);
         }
-        (window as any).onYouTubeIframeAPIReady = () => {
+        (window as Window).onYouTubeIframeAPIReady = () => {
             if (iframeRef.current) {
                 playerRef.current = new YT.Player(iframeRef.current, { events: { onReady: OnPlayerReady } });
             }
@@ -27,15 +29,14 @@ const Player: React.FC<Player> = ({ currentVideo }) => {
     }, []);
 
     const OnPlayerReady = (event: YT.PlayerEvent) => {
-        console.log("funny :)");
-        console.log(playerRef.current.getVideoUrl() + "TEST");
+        console.log("funny :)" + event.target.getVideoUrl());
     }
 
     return (
         <div className="w-full max-h-screen aspect-video overflow-hidden">
             <iframe
                 ref={iframeRef}
-                src={currentVideo + `?enablejsapi=1`}
+                src={item.url + `?enablejsapi=1`}
                 title="YouTube video player"
                 frameBorder={0}
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"

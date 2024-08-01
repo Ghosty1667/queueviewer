@@ -2,7 +2,9 @@ import { createRoot } from 'react-dom/client';
 import React, { useEffect, useState } from 'react';
 import Player from './Player';
 import Navbar from './Navbar';
-import Queue from './Queue';
+import QueueList from './Queue';
+
+import { Queue, QueueItem, ActiveVideo } from './types';
 import useSocket from './Socket';
 
 // Get the container element
@@ -20,46 +22,65 @@ declare global {
 
 const App: React.FC = () => {
 
-    const { data, loading } = useSocket(window.SOCKET_URL || 'http://localhost:3000/');
-    const [currentVideo, setCurrentVideo] = useState<string | null>(null);
+    const { queue, currentVideo, loading } = useSocket(window.SOCKET_URL || 'http://localhost:3000/');
+    const [activeVideo, setActiveVideo] = useState<ActiveVideo | null>(null);
 
     useEffect(() => {
-        if (data && data.Queue.QueueItems.length > 0) {
-            setCurrentVideo(data.Queue.QueueItems[0].url || null);
+        if (queue && queue.items.length > 0) {
+            setActiveVideo(queue.activeVideo);
         }
-    }, [data]);
+    }, [queue]);
 
-    const QueueItems = [
+    const QueueItems: QueueItem[] = [
         {
+            id: 0,
             thumbnail: 'http://placekitten.com/200/300',
-            duration: '3:45',
+            url: "https://www.youtube.com/embed/ZaxUZH0cbhM?si=kXxYziYygWmuykb2",
             name: 'Video 1',
         },
         {
+            id: 1,
             thumbnail: 'http://placekitten.com/200/300',
-            duration: '2:30',
+            url: "https://www.youtube.com/embed/ZaxUZH0cbhM?si=kXxYziYygWmuykb2",
             name: 'Video 2',
         },
         {
+            id: 2,
             thumbnail: 'http://placekitten.com/200/300',
-            duration: '4:15',
+            url: "https://www.youtube.com/embed/ZaxUZH0cbhM?si=kXxYziYygWmuykb2",
             name: 'Video 3',
         },
         {
+            id: 3,
             thumbnail: 'http://placekitten.com/200/300',
-            duration: '5:10',
+            url: "https://www.youtube.com/embed/ZaxUZH0cbhM?si=kXxYziYygWmuykb2",
             name: 'Video 4',
         },
         {
+            id: 4,
             thumbnail: 'http://placekitten.com/200/300',
-            duration: '1:50',
+            url: "https://www.youtube.com/embed/ZaxUZH0cbhM?si=kXxYziYygWmuykb2",
             name: 'Video 5',
         },
         {
+            id: 5,
             thumbnail: 'http://placekitten.com/200/300',
-            duration: '3:20',
+            url: "https://www.youtube.com/embed/ZaxUZH0cbhM?si=kXxYziYygWmuykb2",
             name: 'Video 6',
         },
+        {
+            id: 6,
+            thumbnail: 'http://placekitten.com/200/300',
+            url: "https://www.youtube.com/embed/ZaxUZH0cbhM?si=kXxYziYygWmuykb2",
+            name: 'Video 7',
+        },
+        {
+            id: 7,
+            thumbnail: 'http://placekitten.com/200/300',
+            url: "https://www.youtube.com/embed/ZaxUZH0cbhM?si=kXxYziYygWmuykb2",
+            name: 'Video 8',
+        },
+
 
     ];
 
@@ -68,9 +89,9 @@ const App: React.FC = () => {
             <Navbar />
             {loading ? (<p>Loading</p>)
                 : (
-                    data && (<div className="flex overflow-hidden">
-                        <Player currentVideo={currentVideo} />
-                        <Queue QueueItems={data.Queue.QueueItems} />
+                    queue && (<div className="flex overflow-hidden">
+                        <Player {...activeVideo} />
+                        <QueueList {...queue} />
                     </div>)
                 )}
 
