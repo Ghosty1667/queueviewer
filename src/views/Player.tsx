@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 import { ActiveVideo } from './types';
 
@@ -9,7 +9,7 @@ declare global {
 }
 
 const Player: React.FC<ActiveVideo> = ({ item, isPaused, timestamp }) => {
-
+    const [currentTime, setCurrentVideo] = useState(timestamp)
 
     const iframeRef = useRef<HTMLIFrameElement>(null)
     const playerRef = useRef<YT.Player | null>(null)
@@ -29,7 +29,7 @@ const Player: React.FC<ActiveVideo> = ({ item, isPaused, timestamp }) => {
     }, []);
 
     const OnPlayerReady = (event: YT.PlayerEvent) => {
-        console.log("funny :)" + event.target.getVideoUrl());
+        event.target.playVideoAt(currentTime);
     }
 
     return (
