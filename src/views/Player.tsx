@@ -26,16 +26,7 @@ const Player: React.FC<ActiveVideo> = ({ item, isPaused, timestamp }) => {
                 });
             }
         }
-    }, []);
-
-
-    useEffect(() => {
-        if (playerRef.current) {
-            playerRef.current.loadVideoById(item.url);
-        }
-    }, [item.url]);
-
-
+    }, [item]);
 
 
 
