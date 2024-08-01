@@ -15,6 +15,7 @@ const useSocket = (url: string): { queue: Queue | null, loading: boolean, curren
 
         socket.on('data', (jsonData: Queue) => {
             setQueue(jsonData);
+            setCurrentVideo(jsonData.activeVideo);
             setLoading(false)
         });
 
