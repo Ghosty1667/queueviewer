@@ -10,21 +10,10 @@ import useSocket, { useDummySocket } from './Socket';
 // Get the container element
 const container = document.getElementById('root');
 
-declare global {
-    interface Window {
-        SOCKET_URL?: string;
-    }
-}
-
-
-
-
-
 const App: React.FC = () => {
 
-    // const { queue, currentVideo, loading } = useSocket(window.SOCKET_URL || 'http://localhost:3000/');
-
-    const { queue, currentVideo, loading } = useDummySocket();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { queue, currentVideo, loading } = (import.meta as any).env.VITE_DUMMY_DATA ? useDummySocket() : useSocket((import.meta as any).env.SOCKET_URL || 'http://localhost:3000/') as any;
 
     return (
         <div className="flex flex-col h-screen">
