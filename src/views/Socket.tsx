@@ -41,40 +41,40 @@ const useSocket = (url: string): useSocketProps => {
 
 
 
-    const deleteData = useCallback((id: number) => {
+    const handleData = useCallback((jsonData: Queue | ActiveVideo) => {
+        if ('items' in jsonData) {
+            setQueue(jsonData.items);
+            setCurrentVideo(jsonData.activeVideo);
+        } else {
+            setCurrentVideo(jsonData);
+        }
+        setLoading(false);
+    }, []);
+
+    const emitEvent = useCallback((event: string, data: { id?: number, url?: string }) => {
         return new Promise((resolve, reject) => {
             if (socket) {
-                socket.emit('delete', { id }, (response: { status: string }) => {
+                socket.emit(event, data, (response: { status: string }) => {
                     if (response.status === 'ok') {
                         resolve(response);
                     } else {
-                        reject(new Error('Delete failed'));
+                        reject(new Error(`${event} failed`));
                     }
                 });
-                console.log('Delete event emitted:', id);
+                console.log(`${event} event emitted:`, data);
             } else {
                 reject(new Error('No socket connection'));
             }
         });
     }, [socket]);
+
+    const deleteData = useCallback((id: number) => {
+        return emitEvent('delete', { id });
+    }, [emitEvent]);
 
     const addData = useCallback((url: string) => {
-        return new Promise((resolve, reject) => {
-            if (socket) {
-                socket.emit('add', { url }, (response: { status: string }) => {
-                    if (response.status === 'ok') {
-                        resolve(response);
-                    } else {
-                        reject(new Error('add failed'));
-                    }
-                });
-                console.log('add event emitted:', url);
-            } else {
-                reject(new Error('No socket connection'));
-            }
-        });
-    }, [socket]);
-
+        return emitEvent('add', { url });
+    }, [emitEvent]);
 
 
     return { queue, currentVideo, loading, deleteData, addData };
