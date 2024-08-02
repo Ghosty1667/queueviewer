@@ -199,6 +199,14 @@ export const useDummySocket = (): useSocketProps => {
         });
     }, []);
 
+    const changeActive = useCallback((id: number) => {
+        return new Promise((resolve) => {
+            // Dummy implementation
+            console.log('ChangeActive event emitted:', id);
+            resolve({ status: 'ok' });
+        });
+    }, []);
+
     const addData = useCallback((url: string) => {
         return new Promise((resolve) => {
             // Dummy implementation
@@ -208,5 +216,5 @@ export const useDummySocket = (): useSocketProps => {
     }, []);
 
 
-    return { queue, currentVideo, loading, deleteData, addData };
+    return { queue, currentVideo, loading, deleteData, addData, changeActive };
 };
