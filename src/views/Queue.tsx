@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { QueueItem } from './types';
 
@@ -10,7 +10,9 @@ interface QueueListProps {
 const QueueList: React.FC<QueueListProps> = ({ items, onDelete }) => {
     const [queueItems, setQueueItems] = useState(items);
 
-
+    useEffect(() => {
+        setQueueItems(items)
+    }, [items])
 
     const handleDrag = (index: number, newIndex: number) => {
         const updatedQueueItems = [...queueItems];
