@@ -61,14 +61,14 @@ const useSocket = (url: string): useSocketProps => {
     const addData = useCallback((url: string) => {
         return new Promise((resolve, reject) => {
             if (socket) {
-                socket.emit('delete', { url }, (response: { status: string }) => {
+                socket.emit('add', { url }, (response: { status: string }) => {
                     if (response.status === 'ok') {
                         resolve(response);
                     } else {
-                        reject(new Error('Delete failed'));
+                        reject(new Error('add failed'));
                     }
                 });
-                console.log('Delete event emitted:', url);
+                console.log('add event emitted:', url);
             } else {
                 reject(new Error('No socket connection'));
             }
