@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 import { ActiveVideo } from './types';
 
@@ -6,6 +6,9 @@ import { ActiveVideo } from './types';
 const Player: React.FC<ActiveVideo> = ({ item, timestamp }) => {
     const iframeRef = useRef<HTMLIFrameElement>(null)
     const playerRef = useRef<YT.Player | null>(null)
+
+    const isYouTubeAPIReady = useRef(false);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
 
@@ -19,6 +22,9 @@ const Player: React.FC<ActiveVideo> = ({ item, timestamp }) => {
         }
 
         const onYouTubeIframeAPIReady: () => void = () => {
+            if (isYouTubeAPIReady.current) return;
+            isYouTubeAPIReady.current = true;
+
             playerRef.current = new window.YT.Player(iframeRef.current, {
                 videoId: item.url,
                 playerVars: {
@@ -29,6 +35,10 @@ const Player: React.FC<ActiveVideo> = ({ item, timestamp }) => {
             });
         };
 
+        const OnPlayerReady = (event: YT.PlayerEvent) => {
+            event.target?.seekTo(timestamp, true);
+            setIsLoading(false);
+        };
 
         if (!window.YT) {
             loadYouTubeAPI();
@@ -44,12 +54,6 @@ const Player: React.FC<ActiveVideo> = ({ item, timestamp }) => {
     //         playerRef.current.loadVideoById(item.url);
     //     }
     // }, []);
-
-
-    const OnPlayerReady = (event: YT.PlayerEvent) => {
-        event.target?.seekTo(timestamp, true);
-
-    }
 
     return (
         <div className="w-full max-h-screen aspect-video overflow-hidden">
