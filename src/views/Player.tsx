@@ -34,6 +34,7 @@ const Player: React.FC<ActiveVideo> = ({ item, timestamp }) => {
                 events: { onReady: OnPlayerReady }
             });
         };
+        
 
         const OnPlayerReady = (event: YT.PlayerEvent) => {
             event.target?.seekTo(timestamp, true);

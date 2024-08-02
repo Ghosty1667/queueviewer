@@ -8,6 +8,7 @@ interface useSocketProps {
     loading: boolean;
     currentVideo: ActiveVideo | undefined;
     deleteData: (id: number) => void;
+    changeActive: (id: number) => void;
     addData: (url: string) => void;
 }
 
@@ -72,12 +73,16 @@ const useSocket = (url: string): useSocketProps => {
         return emitEvent('delete', { id });
     }, [emitEvent]);
 
+    const changeActive = useCallback((id: number) => {
+        return emitEvent('play', { id });
+    }, [emitEvent]);
+
     const addData = useCallback((url: string) => {
         return emitEvent('add', { url });
     }, [emitEvent]);
 
 
-    return { queue, currentVideo, loading, deleteData, addData };
+    return { queue, currentVideo, loading, deleteData, addData, changeActive };
 };
 
 export default useSocket;
@@ -194,6 +199,14 @@ export const useDummySocket = (): useSocketProps => {
         });
     }, []);
 
+    const changeActive = useCallback((id: number) => {
+        return new Promise((resolve) => {
+            // Dummy implementation
+            console.log('ChangeActive event emitted:', id);
+            resolve({ status: 'ok' });
+        });
+    }, []);
+
     const addData = useCallback((url: string) => {
         return new Promise((resolve) => {
             // Dummy implementation
@@ -203,5 +216,5 @@ export const useDummySocket = (): useSocketProps => {
     }, []);
 
 
-    return { queue, currentVideo, loading, deleteData, addData };
+    return { queue, currentVideo, loading, deleteData, addData, changeActive };
 };
