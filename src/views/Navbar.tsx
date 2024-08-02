@@ -1,7 +1,20 @@
 import React from "react";
 
+interface NavbarProps {
+    onAdd?: (url: string) => void;
+}
 
-const Navbar: React.FC = () => {
+const Navbar: React.FC<NavbarProps> = ({ onAdd }) => {
+
+    const addItem = async () => {
+        try {
+            const inputText = (document.querySelector('input') as HTMLInputElement).value;
+            await onAdd(inputText);
+        } catch (err) {
+            console.error('Add failed:', err);
+        }
+    }
+
     return (
         <nav className="flex items-center justify-between bg-gray-800 py-1 px-6">
             <div className="flex items-center">
@@ -16,7 +29,7 @@ const Navbar: React.FC = () => {
                     placeholder="Search"
                     className="ml-2 bg-transparent outline-none"
                 />
-                <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={addItem}>
                     Add
                 </button>
             </div>

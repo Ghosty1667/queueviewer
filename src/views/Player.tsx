@@ -1,9 +1,9 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 
 import { ActiveVideo } from './types';
 
 
-const Player: React.FC<ActiveVideo> = ({ item, isPaused, timestamp }) => {
+const Player: React.FC<ActiveVideo> = ({ item, timestamp }) => {
     const iframeRef = useRef<HTMLIFrameElement>(null)
     const playerRef = useRef<YT.Player | null>(null)
 
@@ -36,10 +36,9 @@ const Player: React.FC<ActiveVideo> = ({ item, isPaused, timestamp }) => {
     }, [item.url]);
 
 
-
     const OnPlayerReady = (event: YT.PlayerEvent) => {
         console.log('Player ready');
-        playerRef.current?.seekTo(timestamp);
+        event.target?.seekTo(timestamp, true);
 
     }
 

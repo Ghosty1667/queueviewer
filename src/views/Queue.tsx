@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 
-import { Queue, QueueItem } from './types';
+import { QueueItem } from './types';
 
 interface QueueListProps {
     items: QueueItem[];
-    onDelete: (id: number) => Promise<void>;
+    onDelete: (id: number) => void;
 }
 
 const QueueList: React.FC<QueueListProps> = ({ items, onDelete }) => {
@@ -19,12 +19,9 @@ const QueueList: React.FC<QueueListProps> = ({ items, onDelete }) => {
         setQueueItems(updatedQueueItems);
     };
 
-    const handleDelete = async (item: QueueItem, index: number) => {
+    const handleDelete = async (item: QueueItem) => {
         try {
             await onDelete(item.id);
-            const updatedQueueItems = [...queueItems];
-            updatedQueueItems.splice(index, 1);
-            setQueueItems(updatedQueueItems);
         } catch (err) {
             console.error('Delete failed:', err);
         }
@@ -60,7 +57,7 @@ const QueueList: React.FC<QueueListProps> = ({ items, onDelete }) => {
                         <p>buh</p>
                         <p>{item.name}</p>
                     </div>
-                    <div onClick={() => handleDelete(item, index)} className="btn btn-danger hover:text-red-600">
+                    <div onClick={() => handleDelete(item)} className="btn btn-danger hover:text-red-600">
                         <i className="bi bi-x"></i>
                     </div>
                 </button>

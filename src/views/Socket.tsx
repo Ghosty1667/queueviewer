@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import io, { Socket } from 'socket.io-client';
+import { io, Socket } from 'socket.io-client';
 
 import { Queue, QueueItem, ActiveVideo } from './types';
 
@@ -8,6 +8,7 @@ interface useSocketProps {
     loading: boolean;
     currentVideo: ActiveVideo | undefined;
     deleteData: (id: number) => void;
+    addData: (url: string) => void;
 }
 
 const useSocket = (url: string): useSocketProps => {
@@ -57,9 +58,26 @@ const useSocket = (url: string): useSocketProps => {
         });
     }, [socket]);
 
+    const addData = useCallback((url: string) => {
+        return new Promise((resolve, reject) => {
+            if (socket) {
+                socket.emit('delete', { url }, (response: { status: string }) => {
+                    if (response.status === 'ok') {
+                        resolve(response);
+                    } else {
+                        reject(new Error('Delete failed'));
+                    }
+                });
+                console.log('Delete event emitted:', url);
+            } else {
+                reject(new Error('No socket connection'));
+            }
+        });
+    }, [socket]);
 
 
-    return { queue, currentVideo, loading, deleteData };
+
+    return { queue, currentVideo, loading, deleteData, addData };
 };
 
 export default useSocket;
@@ -130,18 +148,20 @@ const testQueue: Queue = {
 }
 
 const dummySocket = {
-    on: (event: string, callback: (data: any) => void) => {
+    on: (event: string, callback: (data: Queue | ActiveVideo | null) => void) => {
         if (event === 'data') {
             callback(testQueue);
         } else if (event === 'video-update') {
             callback(testQueue.activeVideo);
         }
     },
-    disconnect: () => { }
+    disconnect: () => {
+        console.log('Disconnected');
+    }
 };
 
 
-export const useDummySocket = () => {
+export const useDummySocket = (): useSocketProps => {
     const [queue, setQueue] = useState<QueueItem[] | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [currentVideo, setCurrentVideo] = useState<ActiveVideo | null>(null);
@@ -165,5 +185,23 @@ export const useDummySocket = () => {
         };
     }, []);
 
-    return { queue, currentVideo, loading };
+
+    const deleteData = useCallback((id: number) => {
+        return new Promise((resolve) => {
+            // Dummy implementation
+            console.log('Delete event emitted:', id);
+            resolve({ status: 'ok' });
+        });
+    }, []);
+
+    const addData = useCallback((url: string) => {
+        return new Promise((resolve) => {
+            // Dummy implementation
+            console.log('Add event emitted:', url);
+            resolve({ status: 'ok' });
+        });
+    }, []);
+
+
+    return { queue, currentVideo, loading, deleteData, addData };
 };
