@@ -16,7 +16,7 @@ const App: React.FC = () => {
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     //@ts-ignore
-    const { queue, currentVideo, loading, deleteData, addData } = (import.meta as any).env.VITE_DUMMY_DATA ? useDummySocket() : useSocket((import.meta as any).env.SOCKET_URL || 'http://localhost:3000/');
+    const { queue, currentVideo, loading, deleteData, addData, changeActive } = (import.meta as any).env.VITE_DUMMY_DATA ? useDummySocket() : useSocket((import.meta as any).env.SOCKET_URL || 'http://localhost:3000/');
 
     return (
         <div className="flex flex-col h-screen">
@@ -25,7 +25,7 @@ const App: React.FC = () => {
                 : (
                     queue && (<div className="flex overflow-hidden">
                         <Player {...currentVideo} />
-                        <QueueList onDelete={deleteData} items={queue} />
+                        <QueueList onDelete={deleteData} changeActive={changeActive} items={queue} />
                     </div>)
                 )}
 

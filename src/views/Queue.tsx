@@ -5,9 +5,10 @@ import { QueueItem } from './types';
 interface QueueListProps {
     items: QueueItem[];
     onDelete: (id: number) => void;
+    changeActive: (id: number) => void;
 }
 
-const QueueList: React.FC<QueueListProps> = ({ items, onDelete }) => {
+const QueueList: React.FC<QueueListProps> = ({ items, onDelete, changeActive }) => {
     const [queueItems, setQueueItems] = useState(items);
 
     useEffect(() => {
@@ -19,6 +20,14 @@ const QueueList: React.FC<QueueListProps> = ({ items, onDelete }) => {
         const [removedItem] = updatedQueueItems.splice(index, 1);
         updatedQueueItems.splice(newIndex, 0, removedItem);
         setQueueItems(updatedQueueItems);
+    };
+
+    const handleClick = async (item: QueueItem) => {
+        try {
+            await changeActive(item.id);
+        } catch (err) {
+            console.error('Add failed', err);
+        }
     };
 
     const handleDelete = async (item: QueueItem) => {
@@ -37,6 +46,7 @@ const QueueList: React.FC<QueueListProps> = ({ items, onDelete }) => {
                     key={index}
                     className="flex items-center justify-between space-x-4 bg-gray-700 hover:bg-gray-500 text-white p-2"
                     draggable
+                    onClick={() => {handleClick(item)}}
                     onDragStart={(e) => {
                         e.dataTransfer.setData('text/plain', index.toString());
                         e.dataTransfer.setDragImage(e.target as Element, 0, 0);

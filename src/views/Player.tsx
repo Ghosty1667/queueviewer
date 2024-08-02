@@ -28,6 +28,7 @@ const Player: React.FC<ActiveVideo> = ({ item, timestamp }) => {
                 events: { onReady: OnPlayerReady }
             });
         };
+        
 
 
         if (!window.YT) {
