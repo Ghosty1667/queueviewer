@@ -2,7 +2,12 @@ import React, { useState } from 'react';
 
 import { Queue, QueueItem } from './types';
 
-const QueueList: React.FC<{ items: QueueItem[] }> = ({ items }) => {
+interface QueueListProps {
+    items: QueueItem[];
+    onDelete: (id: number) => Promise<void>;
+}
+
+const QueueList: React.FC<QueueListProps> = ({ items, onDelete }) => {
     const [queueItems, setQueueItems] = useState(items);
 
 
@@ -14,10 +19,15 @@ const QueueList: React.FC<{ items: QueueItem[] }> = ({ items }) => {
         setQueueItems(updatedQueueItems);
     };
 
-    const handleDelete = (index: number) => {
-        const updatedQueueItems = [...queueItems];
-        updatedQueueItems.splice(index, 1);
-        setQueueItems(updatedQueueItems);
+    const handleDelete = async (item: QueueItem, index: number) => {
+        try {
+            await onDelete(item.id);
+            const updatedQueueItems = [...queueItems];
+            updatedQueueItems.splice(index, 1);
+            setQueueItems(updatedQueueItems);
+        } catch (err) {
+            console.error('Delete failed:', err);
+        }
     };
 
     return (
@@ -50,7 +60,7 @@ const QueueList: React.FC<{ items: QueueItem[] }> = ({ items }) => {
                         <p>buh</p>
                         <p>{item.name}</p>
                     </div>
-                    <div onClick={() => handleDelete(index)} className="btn btn-danger hover:text-red-600">
+                    <div onClick={() => handleDelete(item, index)} className="btn btn-danger hover:text-red-600">
                         <i className="bi bi-x"></i>
                     </div>
                 </button>

@@ -1,11 +1,18 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import io, { Socket } from 'socket.io-client';
 
 import { Queue, QueueItem, ActiveVideo } from './types';
 
+interface useSocketProps {
+    queue: QueueItem[] | null;
+    loading: boolean;
+    currentVideo: ActiveVideo | undefined;
+    deleteData: (id: number) => void;
+}
 
+const useSocket = (url: string): useSocketProps => {
 
-const useSocket = (url: string): { queue: QueueItem[] | null, loading: boolean, currentVideo: ActiveVideo | undefined } => {
+    const [socket, setSocket] = useState<Socket | null>(null);
     const [queue, setQueue] = useState<QueueItem[] | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [currentVideo, setCurrentVideo] = useState<ActiveVideo | null>(null);
@@ -19,19 +26,40 @@ const useSocket = (url: string): { queue: QueueItem[] | null, loading: boolean, 
             setLoading(false)
         });
 
-
         socket.on('video-update', (jsonData: ActiveVideo) => {
             setCurrentVideo(jsonData);
             setLoading(false)
         });
 
+        setSocket(socket)
 
         return () => {
             socket.disconnect();
         };
     }, [url]);
 
-    return { queue, loading, currentVideo };
+
+
+    const deleteData = useCallback((id: number) => {
+        return new Promise((resolve, reject) => {
+            if (socket) {
+                socket.emit('delete', { id }, (response: { status: string }) => {
+                    if (response.status === 'ok') {
+                        resolve(response);
+                    } else {
+                        reject(new Error('Delete failed'));
+                    }
+                });
+                console.log('Delete event emitted:', id);
+            } else {
+                reject(new Error('No socket connection'));
+            }
+        });
+    }, [socket]);
+
+
+
+    return { queue, currentVideo, loading, deleteData };
 };
 
 export default useSocket;
