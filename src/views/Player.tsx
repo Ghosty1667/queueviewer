@@ -41,13 +41,26 @@ const Player: React.FC<ActiveVideo> = ({ item, timestamp }) => {
             setIsLoading(false);
         };
 
+        const changeVideo = (videoId: string, timestamp: number) => {
+            if (playerRef.current) {
+                if (!playerRef.current.getVideoEmbedCode().includes(videoId)) {
+                    playerRef.current.loadVideoById(videoId);
+                }
+                playerRef.current.seekTo(timestamp, true);
+            }
+        };
+
         if (!window.YT) {
             loadYouTubeAPI();
             window.onYouTubeIframeAPIReady = onYouTubeIframeAPIReady;
         } else {
             onYouTubeIframeAPIReady();
         }
-    }, [item.url]);
+
+        if (playerRef.current) {
+            changeVideo(item.url, timestamp);
+        }
+    }, [item]);
 
 
     // useEffect(() => {
