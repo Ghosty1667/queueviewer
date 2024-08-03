@@ -43,7 +43,7 @@ const Player: React.FC<ActiveVideo> = ({ item, timestamp }) => {
 
         const changeVideo = (videoId: string, timestamp: number) => {
             if (playerRef.current) {
-                if (!playerRef.current.getVideoEmbedCode().includes(videoId)) {
+                if (!playerRef.current.getVideoUrl().includes(videoId)) {
                     playerRef.current.loadVideoById(videoId);
                 }
                 playerRef.current.seekTo(timestamp, true);
