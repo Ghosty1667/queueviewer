@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-import { QueueItem } from './types';
+import { QueueItem } from '../types/api';
 
 
 interface QueueListProps {
@@ -23,7 +23,7 @@ const QueueList: React.FC<QueueListProps> = ({ items, sendEvent }) => {
         setQueueItems(updatedQueueItems);
 
         try {
-            await sendEvent("changeOrder", { index: items[index], newIndex: items[newIndex].id });
+            await sendEvent("changeOrder", { item: items[index].id, newItem: items[newIndex].id, itemIndex: index, newItemIndex: newIndex });
         } catch (err) {
             setQueueItems(items);
             console.error('Add failed', err);
@@ -68,8 +68,7 @@ const QueueList: React.FC<QueueListProps> = ({ items, sendEvent }) => {
 
 
     return (
-        <div className="flex w-[17%] flex-col overflow-y-auto">
-            <h1 className="bg-gray-700 text-white py-2 px-4 text-lg font-semibold">Up next</h1>
+        <div className="flex flex-col overflow-y-auto">
             {queueItems.map((item, index) => (
                 <button
                     key={index}

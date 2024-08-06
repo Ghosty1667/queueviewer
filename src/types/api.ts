@@ -15,3 +15,10 @@ export interface ActiveVideo {
     isPaused: boolean;
     timestamp: number;
 }
+
+export interface useSocketProps {
+    queue: QueueItem[] | null;
+    loading: boolean;
+    currentVideo: ActiveVideo | undefined;
+    sendEvent: <T extends object, >(message: string, data: T) => void;
+}

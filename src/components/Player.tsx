@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 
-import { ActiveVideo } from './types';
+import { ActiveVideo } from '../types/api';
 
 
 declare global {
