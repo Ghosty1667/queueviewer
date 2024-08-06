@@ -27,7 +27,7 @@ const App: React.FC = () => {
                     queue && (<div className="flex overflow-hidden">
 
                         <Player {...currentVideo} sendEvent={sendEvent} />
-                        <SideBar >
+                        <SideBar sendEvent={sendEvent}>
                             <QueueList sendEvent={sendEvent} items={queue} />
                         </SideBar>
 
