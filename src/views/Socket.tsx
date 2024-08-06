@@ -1,11 +1,18 @@
 import { useEffect, useState } from 'react';
-import io, { Socket } from 'socket.io-client';
+import { io, Socket } from 'socket.io-client';
 
 import { Queue, QueueItem, ActiveVideo } from './types';
 
+interface useSocketProps {
+    queue: QueueItem[] | null;
+    loading: boolean;
+    currentVideo: ActiveVideo | undefined;
+    sendEvent: <T extends object, >(message: string, data: T) => void;
+}
 
+const useSocket = (url: string): useSocketProps => {
 
-const useSocket = (url: string): { queue: QueueItem[] | null, loading: boolean, currentVideo: ActiveVideo | undefined } => {
+    const [socket, setSocket] = useState<Socket | null>(null);
     const [queue, setQueue] = useState<QueueItem[] | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [currentVideo, setCurrentVideo] = useState<ActiveVideo | null>(null);
@@ -14,30 +21,58 @@ const useSocket = (url: string): { queue: QueueItem[] | null, loading: boolean, 
         const socket: Socket = io(url);
 
         socket.on('data', (jsonData: Queue) => {
-            setQueue(jsonData.items);
-            setCurrentVideo(jsonData.activeVideo);
-            setLoading(false)
+            handleData(jsonData);
         });
-
 
         socket.on('video-update', (jsonData: ActiveVideo) => {
             setCurrentVideo(jsonData);
             setLoading(false)
         });
 
+        setSocket(socket)
 
         return () => {
             socket.disconnect();
         };
     }, [url]);
 
-    return { queue, loading, currentVideo };
+
+
+    const handleData = (jsonData: Queue | ActiveVideo) => {
+        if ('items' in jsonData) {
+            setQueue(jsonData.items);
+            setCurrentVideo(jsonData.activeVideo);
+        } else {
+            setCurrentVideo(jsonData);
+        }
+        setLoading(false);
+    };
+
+    const emitEvent = (event: string, data: object) => {
+        return new Promise((resolve, reject) => {
+            if (socket) {
+                socket.emit(event, data, (response: { status: string }) => {
+                    if (response.status === 'ok') {
+                        resolve(response);
+                    } else {
+                        reject(new Error(`${event} failed`));
+                    }
+                });
+                console.log(`${event} event emitted:`, data);
+            } else {
+                reject(new Error('No socket connection'));
+            }
+        });
+    };
+
+    const sendEvent = <T extends object,>(message: string, data: T) => {
+        return emitEvent(message, data);
+    }
+
+    return { queue, currentVideo, loading, sendEvent };
 };
 
 export default useSocket;
-
-
-
 
 const QueueItems: QueueItem[] = [
     {
@@ -102,18 +137,20 @@ const testQueue: Queue = {
 }
 
 const dummySocket = {
-    on: (event: string, callback: (data: any) => void) => {
+    on: (event: string, callback: (data: Queue | ActiveVideo | null) => void) => {
         if (event === 'data') {
             callback(testQueue);
         } else if (event === 'video-update') {
             callback(testQueue.activeVideo);
         }
     },
-    disconnect: () => { }
+    disconnect: () => {
+        console.log('Disconnected');
+    }
 };
 
 
-export const useDummySocket = () => {
+export const useDummySocket = (): useSocketProps => {
     const [queue, setQueue] = useState<QueueItem[] | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [currentVideo, setCurrentVideo] = useState<ActiveVideo | null>(null);
@@ -125,17 +162,17 @@ export const useDummySocket = () => {
             setLoading(false);
         };
 
-        // const handleVideoUpdate = (video: ActiveVideo) => {
-        //     setCurrentVideo(video);
-        // };
-
         dummySocket.on('data', handleData);
-        // dummySocket.on('video-update', handleVideoUpdate);
 
         return () => {
             dummySocket.disconnect();
         };
     }, []);
 
-    return { queue, currentVideo, loading };
+
+    const sendEvent = <T extends object,>(message: string, data: T) => {
+        console.log('Event emitted:', message, data);
+    };
+
+    return { queue, currentVideo, loading, sendEvent };
 };

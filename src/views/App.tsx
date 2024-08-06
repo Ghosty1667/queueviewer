@@ -1,28 +1,29 @@
+
 import { createRoot } from 'react-dom/client';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import Player from './Player';
 import Navbar from './Navbar';
 import QueueList from './Queue';
 
-import { Queue, QueueItem, ActiveVideo } from './types';
-import useSocket, { useDummySocket } from './Socket';
+import useSocket from './Socket';
 
 // Get the container element
 const container = document.getElementById('root');
 
 const App: React.FC = () => {
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any 
-    const { queue, currentVideo, loading } = (import.meta as any).env.VITE_DUMMY_DATA ? useDummySocket() : useSocket((import.meta as any).env.SOCKET_URL || 'http://localhost:3000/');
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    //@ts-ignore
+    const { queue, currentVideo, loading, sendEvent } = useSocket((import.meta as unknown).env.SOCKET_URL || 'http://localhost:3000/');
 
     return (
-        <div className="flex flex-col h-screen">
-            <Navbar />
+        <div className="flex flex-col h-screen bg-gray-800">
+            <Navbar sendEvent={sendEvent} />
             {loading ? (<p>Loading</p>)
                 : (
                     queue && (<div className="flex overflow-hidden">
-                        <Player {...currentVideo} />
-                        <QueueList items={queue} />
+                        <Player {...currentVideo} sendEvent={sendEvent} />
+                        <QueueList sendEvent={sendEvent} items={queue} />
                     </div>)
                 )}
 
