@@ -2,15 +2,20 @@ import React, { useEffect, useRef, useState } from 'react';
 
 import { ActiveVideo } from './types';
 
+
 declare global {
     interface Window {
         onYouTubeIframeAPIReady: () => void;
     }
 }
 
+interface PlayerEvents extends ActiveVideo {
+    sendEvent?: (message: string, data: object) => void;
+}
 
 
-const Player: React.FC<ActiveVideo> = ({ item, timestamp }) => {
+
+const Player: React.FC<PlayerEvents> = ({ item, timestamp, sendEvent }) => {
     const iframeRef = useRef<HTMLIFrameElement>(null)
     const playerRef = useRef<YT.Player | null>(null)
 
@@ -38,8 +43,13 @@ const Player: React.FC<ActiveVideo> = ({ item, timestamp }) => {
                     origin: window.location.origin,
                     autoplay: 1,
                 },
-                events: { onReady: OnPlayerReady }
-            });
+                events: {
+                    onReady: OnPlayerReady,
+                    onStateChange: stateChange,
+
+                },
+            }
+            );
         };
 
 
@@ -69,6 +79,28 @@ const Player: React.FC<ActiveVideo> = ({ item, timestamp }) => {
         }
     }, [item]);
 
+
+    const stateChange = (event: YT.OnStateChangeEvent) => {
+        if (playerRef.current) {
+            if (event.data === YT.PlayerState.PAUSED) {
+                const pauseStartTime = Date.now();
+                const pauseInterval = setInterval(() => {
+                    const pauseDuration = Date.now() - pauseStartTime;
+                    if (pauseDuration >= 500) {
+                        sendEvent('pause', { timestamp: playerRef.current.getCurrentTime() });
+                        clearInterval(pauseInterval);
+                        console.log('pause');
+                    }
+                }, 1000);
+
+                playerRef.current.addEventListener('onStateChange', (stateChangeEvent: YT.OnStateChangeEvent) => {
+                    if (stateChangeEvent.data !== YT.PlayerState.PAUSED) {
+                        clearInterval(pauseInterval);
+                    }
+                });
+            }
+        }
+    }
 
     return (
         <div className="w-full max-h-screen aspect-video">

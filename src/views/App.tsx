@@ -22,7 +22,7 @@ const App: React.FC = () => {
             {loading ? (<p>Loading</p>)
                 : (
                     queue && (<div className="flex overflow-hidden">
-                        <Player {...currentVideo} />
+                        <Player {...currentVideo} sendEvent={sendEvent} />
                         <QueueList sendEvent={sendEvent} items={queue} />
                     </div>)
                 )}
