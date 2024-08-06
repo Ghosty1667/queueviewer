@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
 
 import { Queue, QueueItem, ActiveVideo } from './types';
@@ -7,9 +7,7 @@ interface useSocketProps {
     queue: QueueItem[] | null;
     loading: boolean;
     currentVideo: ActiveVideo | undefined;
-    deleteData: (id: number) => void;
-    changeActive: (id: number) => void;
-    addData: (url: string) => void;
+    sendEvent: <T extends object, >(message: string, data: T) => void;
 }
 
 const useSocket = (url: string): useSocketProps => {
@@ -23,9 +21,7 @@ const useSocket = (url: string): useSocketProps => {
         const socket: Socket = io(url);
 
         socket.on('data', (jsonData: Queue) => {
-            setQueue(jsonData.items);
-            setCurrentVideo(jsonData.activeVideo);
-            setLoading(false)
+            handleData(jsonData);
         });
 
         socket.on('video-update', (jsonData: ActiveVideo) => {
@@ -42,7 +38,7 @@ const useSocket = (url: string): useSocketProps => {
 
 
 
-    const handleData = useCallback((jsonData: Queue | ActiveVideo) => {
+    const handleData = (jsonData: Queue | ActiveVideo) => {
         if ('items' in jsonData) {
             setQueue(jsonData.items);
             setCurrentVideo(jsonData.activeVideo);
@@ -50,9 +46,9 @@ const useSocket = (url: string): useSocketProps => {
             setCurrentVideo(jsonData);
         }
         setLoading(false);
-    }, []);
+    };
 
-    const emitEvent = useCallback((event: string, data: { id?: number, url?: string }) => {
+    const emitEvent = (event: string, data: object) => {
         return new Promise((resolve, reject) => {
             if (socket) {
                 socket.emit(event, data, (response: { status: string }) => {
@@ -67,28 +63,16 @@ const useSocket = (url: string): useSocketProps => {
                 reject(new Error('No socket connection'));
             }
         });
-    }, [socket]);
+    };
 
-    const deleteData = useCallback((id: number) => {
-        return emitEvent('delete', { id });
-    }, [emitEvent]);
+    const sendEvent = <T extends object,>(message: string, data: T) => {
+        return emitEvent(message, data);
+    }
 
-    const changeActive = useCallback((id: number) => {
-        return emitEvent('play', { id });
-    }, [emitEvent]);
-
-    const addData = useCallback((url: string) => {
-        return emitEvent('add', { url });
-    }, [emitEvent]);
-
-
-    return { queue, currentVideo, loading, deleteData, addData, changeActive };
+    return { queue, currentVideo, loading, sendEvent };
 };
 
 export default useSocket;
-
-
-
 
 const QueueItems: QueueItem[] = [
     {
@@ -178,12 +162,7 @@ export const useDummySocket = (): useSocketProps => {
             setLoading(false);
         };
 
-        // const handleVideoUpdate = (video: ActiveVideo) => {
-        //     setCurrentVideo(video);
-        // };
-
         dummySocket.on('data', handleData);
-        // dummySocket.on('video-update', handleVideoUpdate);
 
         return () => {
             dummySocket.disconnect();
@@ -191,30 +170,9 @@ export const useDummySocket = (): useSocketProps => {
     }, []);
 
 
-    const deleteData = useCallback((id: number) => {
-        return new Promise((resolve) => {
-            // Dummy implementation
-            console.log('Delete event emitted:', id);
-            resolve({ status: 'ok' });
-        });
-    }, []);
+    const sendEvent = <T extends object,>(message: string, data: T) => {
+        console.log('Event emitted:', message, data);
+    };
 
-    const changeActive = useCallback((id: number) => {
-        return new Promise((resolve) => {
-            // Dummy implementation
-            console.log('ChangeActive event emitted:', id);
-            resolve({ status: 'ok' });
-        });
-    }, []);
-
-    const addData = useCallback((url: string) => {
-        return new Promise((resolve) => {
-            // Dummy implementation
-            console.log('Add event emitted:', url);
-            resolve({ status: 'ok' });
-        });
-    }, []);
-
-
-    return { queue, currentVideo, loading, deleteData, addData, changeActive };
+    return { queue, currentVideo, loading, sendEvent };
 };

@@ -1,15 +1,15 @@
 import React from "react";
 
 interface NavbarProps {
-    onAdd?: (url: string) => void;
+    sendEvent?: (message: string, data: object) => void;
 }
 
-const Navbar: React.FC<NavbarProps> = ({ onAdd }) => {
+const Navbar: React.FC<NavbarProps> = ({ sendEvent }) => {
 
-    const addItem = async () => {
+    const handleAddItem = async () => {
         try {
             const inputText = (document.querySelector('input') as HTMLInputElement).value;
-            await onAdd(inputText);
+            await sendEvent("add", { url: inputText });
         } catch (err) {
             console.error('Add failed:', err);
         }
@@ -29,7 +29,7 @@ const Navbar: React.FC<NavbarProps> = ({ onAdd }) => {
                     placeholder="Search"
                     className="ml-2 bg-transparent outline-none"
                 />
-                <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={addItem}>
+                <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={handleAddItem}>
                     Add
                 </button>
             </div>

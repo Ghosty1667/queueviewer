@@ -2,6 +2,13 @@ import React, { useEffect, useRef, useState } from 'react';
 
 import { ActiveVideo } from './types';
 
+declare global {
+    interface Window {
+        onYouTubeIframeAPIReady: () => void;
+    }
+}
+
+
 
 const Player: React.FC<ActiveVideo> = ({ item, timestamp }) => {
     const iframeRef = useRef<HTMLIFrameElement>(null)
@@ -34,7 +41,7 @@ const Player: React.FC<ActiveVideo> = ({ item, timestamp }) => {
                 events: { onReady: OnPlayerReady }
             });
         };
-        
+
 
         const OnPlayerReady = (event: YT.PlayerEvent) => {
             event.target?.seekTo(timestamp, true);
@@ -63,17 +70,11 @@ const Player: React.FC<ActiveVideo> = ({ item, timestamp }) => {
     }, [item]);
 
 
-    // useEffect(() => {
-    //     if (playerRef.current) {
-    //         playerRef.current.loadVideoById(item.url);
-    //     }
-    // }, []);
-
     return (
-        <div className="w-full max-h-screen aspect-video overflow-hidden">
+        <div className="w-full max-h-screen aspect-video">
             <div
                 ref={iframeRef}
-                className="w-full h-full"
+                className={`w-full h-full aspect-video overflow-hidden ${isLoading} ? 'animate-pulse' : ''`}
             ></div>
         </div>
     );

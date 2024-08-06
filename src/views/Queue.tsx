@@ -2,29 +2,37 @@ import React, { useEffect, useState } from 'react';
 
 import { QueueItem } from './types';
 
+
 interface QueueListProps {
     items: QueueItem[];
-    onDelete: (id: number) => void;
-    changeActive: (id: number) => void;
+    sendEvent: (message: string, data: object) => void;
+
 }
 
-const QueueList: React.FC<QueueListProps> = ({ items, onDelete, changeActive }) => {
+const QueueList: React.FC<QueueListProps> = ({ items, sendEvent }) => {
     const [queueItems, setQueueItems] = useState(items);
 
     useEffect(() => {
         setQueueItems(items)
     }, [items])
 
-    const handleDrag = (index: number, newIndex: number) => {
+    const handleDrag = async (index: number, newIndex: number) => {
         const updatedQueueItems = [...queueItems];
         const [removedItem] = updatedQueueItems.splice(index, 1);
         updatedQueueItems.splice(newIndex, 0, removedItem);
         setQueueItems(updatedQueueItems);
+
+        try {
+            await sendEvent("changeOrder", { index: items[index], newIndex: items[newIndex].id });
+        } catch (err) {
+            setQueueItems(items);
+            console.error('Add failed', err);
+        }
     };
 
-    const handleClick = async (item: QueueItem) => {
+    const handleChange = async (item: QueueItem) => {
         try {
-            await changeActive(item.id);
+            await sendEvent('play', { id: item.id });
         } catch (err) {
             console.error('Add failed', err);
         }
@@ -32,49 +40,58 @@ const QueueList: React.FC<QueueListProps> = ({ items, onDelete, changeActive }) 
 
     const handleDelete = async (item: QueueItem) => {
         try {
-            await onDelete(item.id);
+            await sendEvent('delete', { id: item.id });
         } catch (err) {
             console.error('Delete failed:', err);
         }
     };
 
+    const handleDragStart = (e: React.DragEvent<HTMLButtonElement>, index: number) => {
+        e.dataTransfer.setData('text/plain', index.toString());
+        e.dataTransfer.setDragImage(e.target as Element, 0, 0);
+    };
+
+    const handleDragOver = (e: React.DragEvent<HTMLButtonElement>) => {
+        e.preventDefault();
+        e.currentTarget.style.borderBottom = '2px solid #ffffff';
+    };
+
+    const handleDragLeave = (e: React.DragEvent<HTMLButtonElement>) => {
+        e.currentTarget.style.borderBottom = 'none';
+    };
+
+    const handleDrop = (e: React.DragEvent<HTMLButtonElement>, dropIndex: number) => {
+        const draggedIndex = Number(e.dataTransfer.getData('text/plain'));
+        handleDrag(draggedIndex, dropIndex);
+        e.currentTarget.style.borderBottom = 'none';
+    };
+
+
     return (
-        <div className="flex w-[25%] flex-col h-screen overflow-y-auto">
+        <div className="flex w-[17%] flex-col overflow-y-auto">
             <h1 className="bg-gray-700 text-white py-2 px-4 text-lg font-semibold">Up next</h1>
             {queueItems.map((item, index) => (
                 <button
                     key={index}
                     className="flex items-center justify-between space-x-4 bg-gray-700 hover:bg-gray-500 text-white p-2"
                     draggable
-                    onClick={() => {handleClick(item)}}
-                    onDragStart={(e) => {
-                        e.dataTransfer.setData('text/plain', index.toString());
-                        e.dataTransfer.setDragImage(e.target as Element, 0, 0);
-                    }}
-                    onDragOver={(e) => {
-                        e.preventDefault();
-                        e.currentTarget.style.borderBottom = '2px solid #ffffff';
-                    }}
-                    onDragLeave={(e) => {
-                        e.currentTarget.style.borderBottom = 'none';
-                    }}
-                    onDrop={(e) => {
-                        const draggedIndex = Number(e.dataTransfer.getData('text/plain'));
-                        handleDrag(draggedIndex, index);
-                        e.currentTarget.style.borderBottom = 'none';
-                    }}
+                    onClick={() => { handleChange(item) }}
+                    onDragStart={(e) => handleDragStart(e, index)}
+                    onDragOver={handleDragOver}
+                    onDragLeave={handleDragLeave}
+                    onDrop={(e) => handleDrop(e, index)}
                 >
                     <img src={item.thumbnail} alt="Thumbnail" className="w-16 h-16" />
                     <div>
-                        <p>buh</p>
                         <p>{item.name}</p>
                     </div>
-                    <div onClick={() => handleDelete(item)} className="btn btn-danger hover:text-red-600">
+                    <div onClick={() => handleDelete(item)} className="btn btn-danger hover:text-red-600" style={{ fontSize: "32px" }}>
                         <i className="bi bi-x"></i>
                     </div>
                 </button>
-            ))}
-        </div>
+            ))
+            }
+        </div >
     );
 };
 
