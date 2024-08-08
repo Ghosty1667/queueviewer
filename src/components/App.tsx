@@ -2,7 +2,6 @@
 import { createRoot } from 'react-dom/client';
 import React from 'react';
 import Player from './Player';
-import Navbar from './Navbar';
 import QueueList from './Queue';
 
 import useSocket from '../hooks/useSocket';

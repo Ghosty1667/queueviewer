@@ -68,11 +68,11 @@ const QueueList: React.FC<QueueListProps> = ({ items, sendEvent }) => {
 
 
     return (
-        <div className="flex flex-col overflow-y-auto">
+        <div>
             {queueItems.map((item, index) => (
                 <button
                     key={index}
-                    className="flex items-center justify-between space-x-4 bg-gray-700 hover:bg-gray-500 text-white p-2"
+                    className="flex items-center w-full justify-between space-x-4 bg-gray-700 hover:bg-gray-500 text-white p-2"
                     draggable
                     onClick={() => { handleChange(item) }}
                     onDragStart={(e) => handleDragStart(e, index)}
