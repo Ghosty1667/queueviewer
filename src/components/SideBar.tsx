@@ -39,7 +39,7 @@ const SideBar: React.FC<SideBarProps> = ({ children, sendEvent }) => {
                             {children}
                         </ul>
                         <div className="bg-gray-800 p-2 sticky bottom-0 flex items-center">
-                            <input type="text" placeholder="Search" className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                            <input type="text" placeholder="Search" className="w-full px-4 py-2 border border-gray-300 rounded-md text-black focus:outline-none focus:ring-2 focus:ring-blue-500" />
                             <button onClick={handleAddItem} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                                 Add
                             </button>
