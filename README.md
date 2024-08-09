@@ -21,9 +21,6 @@ To get started with QueueViewer, follow these simple steps:
 
 ## Contributing
 
-
-## Contributing
-
 Please note that this project is not currently open for external contributions. However, you are welcome to fork and clone the repository to make your own modifications and enhancements. We encourage you to explore and experiment with the codebase to suit your needs. If you have any questions or suggestions, feel free to reach out to use.
 
 
