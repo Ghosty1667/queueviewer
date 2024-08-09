@@ -17,7 +17,6 @@ To get started with QueueViewer, follow these simple steps:
 1. Clone the repository to your local machine.
 2. Install the necessary dependencies by running `npm install`.
 3. Start the application by running `npm start`.
-4. Open your preferred web browser and navigate to `http://localhost:3000`.
 5. You're all set! Start exploring and enjoying your video queue.
 
 ## Contributing
