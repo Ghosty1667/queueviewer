@@ -26,4 +26,4 @@ Please note that this project is not currently open for external contributions. 
 
 ## License
 
-QueueViewer is licensed under the [MIT License](LICENSE).
+QueueViewer is licensed under the [MIT License](LICENSE.md).
