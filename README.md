@@ -2,6 +2,8 @@
 
 QueueViewer is a powerful application that allows users to view, add, and sync videos across multiple clients. With QueueViewer, you can easily manage your video queue and enjoy seamless playback on all supported your devices.
 
+![image](https://github.com/user-attachments/assets/14627b85-d6c8-420b-8146-124b70fabfea)
+
 ## Features
 
 - **View Videos**: Queue Youtube Videos to watch with your friends
