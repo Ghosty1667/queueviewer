@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-import { QueueItem } from './types';
+import { QueueItem } from '../types/api';
 
 
 interface QueueListProps {
@@ -23,7 +23,7 @@ const QueueList: React.FC<QueueListProps> = ({ items, sendEvent }) => {
         setQueueItems(updatedQueueItems);
 
         try {
-            await sendEvent("changeOrder", { index: items[index], newIndex: items[newIndex].id });
+            await sendEvent("changeOrder", { item: items[index].id, newItem: items[newIndex].id, itemIndex: index, newItemIndex: newIndex });
         } catch (err) {
             setQueueItems(items);
             console.error('Add failed', err);
@@ -68,12 +68,11 @@ const QueueList: React.FC<QueueListProps> = ({ items, sendEvent }) => {
 
 
     return (
-        <div className="flex w-[17%] flex-col overflow-y-auto">
-            <h1 className="bg-gray-700 text-white py-2 px-4 text-lg font-semibold">Up next</h1>
+        <div>
             {queueItems.map((item, index) => (
                 <button
                     key={index}
-                    className="flex items-center justify-between space-x-4 bg-gray-700 hover:bg-gray-500 text-white p-2"
+                    className="flex items-center w-full justify-between space-x-4 bg-gray-700 hover:bg-gray-500 text-white p-2"
                     draggable
                     onClick={() => { handleChange(item) }}
                     onDragStart={(e) => handleDragStart(e, index)}
@@ -82,7 +81,7 @@ const QueueList: React.FC<QueueListProps> = ({ items, sendEvent }) => {
                     onDrop={(e) => handleDrop(e, index)}
                 >
                     <img src={item.thumbnail} alt="Thumbnail" className="w-16 h-16" />
-                    <div>
+                    <div className='truncate'>
                         <p>{item.name}</p>
                     </div>
                     <div onClick={() => handleDelete(item)} className="btn btn-danger hover:text-red-600" style={{ fontSize: "32px" }}>
