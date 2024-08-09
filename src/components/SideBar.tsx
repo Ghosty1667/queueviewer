@@ -27,7 +27,7 @@ const SideBar: React.FC<SideBarProps> = ({ children, sendEvent }) => {
 
 
     return (
-        <div className={`bg-gray-700 text-white ${isOpen ? 'w-96' : 'w-16'} transition-all duration-200`}>
+        <div className={`bg-gray-800 text-white ${isOpen ? 'w-96' : 'w-16'} transition-all duration-200`}>
             <div className="flex flex-col h-screen">
                 <div className="flex items-center justify-between p-4">
                     <h1 className={`text-lg font-semibold  ${isOpen ? '' : 'hidden'}`}>Up next</h1>

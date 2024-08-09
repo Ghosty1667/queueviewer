@@ -81,7 +81,7 @@ const QueueList: React.FC<QueueListProps> = ({ items, sendEvent }) => {
                     onDrop={(e) => handleDrop(e, index)}
                 >
                     <img src={item.thumbnail} alt="Thumbnail" className="w-16 h-16" />
-                    <div>
+                    <div className='truncate'>
                         <p>{item.name}</p>
                     </div>
                     <div onClick={() => handleDelete(item)} className="btn btn-danger hover:text-red-600" style={{ fontSize: "32px" }}>
