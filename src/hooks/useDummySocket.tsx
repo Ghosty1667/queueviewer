@@ -1,42 +1,5 @@
-import { useEffect, useState } from 'react';
-import io, { Socket } from 'socket.io-client';
-
-import { Queue, QueueItem, ActiveVideo } from './types';
-
-
-
-const useSocket = (url: string): { queue: QueueItem[] | null, loading: boolean, currentVideo: ActiveVideo | undefined } => {
-    const [queue, setQueue] = useState<QueueItem[] | null>(null);
-    const [loading, setLoading] = useState<boolean>(true);
-    const [currentVideo, setCurrentVideo] = useState<ActiveVideo | null>(null);
-
-    useEffect(() => {
-        const socket: Socket = io(url);
-
-        socket.on('data', (jsonData: Queue) => {
-            setQueue(jsonData.items);
-            setCurrentVideo(jsonData.activeVideo);
-            setLoading(false)
-        });
-
-
-        socket.on('video-update', (jsonData: ActiveVideo) => {
-            setCurrentVideo(jsonData);
-            setLoading(false)
-        });
-
-
-        return () => {
-            socket.disconnect();
-        };
-    }, [url]);
-
-    return { queue, loading, currentVideo };
-};
-
-export default useSocket;
-
-
+import { useEffect, useState } from "react";
+import { ActiveVideo, Queue, QueueItem, useSocketProps } from "../types/api";
 
 
 const QueueItems: QueueItem[] = [
@@ -102,18 +65,20 @@ const testQueue: Queue = {
 }
 
 const dummySocket = {
-    on: (event: string, callback: (data: any) => void) => {
+    on: (event: string, callback: (data: Queue | ActiveVideo | null) => void) => {
         if (event === 'data') {
             callback(testQueue);
         } else if (event === 'video-update') {
             callback(testQueue.activeVideo);
         }
     },
-    disconnect: () => { }
+    disconnect: () => {
+        console.log('Disconnected');
+    }
 };
 
 
-export const useDummySocket = () => {
+export const useDummySocket = (): useSocketProps => {
     const [queue, setQueue] = useState<QueueItem[] | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [currentVideo, setCurrentVideo] = useState<ActiveVideo | null>(null);
@@ -125,17 +90,18 @@ export const useDummySocket = () => {
             setLoading(false);
         };
 
-        // const handleVideoUpdate = (video: ActiveVideo) => {
-        //     setCurrentVideo(video);
-        // };
-
         dummySocket.on('data', handleData);
-        // dummySocket.on('video-update', handleVideoUpdate);
 
         return () => {
             dummySocket.disconnect();
         };
     }, []);
 
-    return { queue, currentVideo, loading };
+
+    const sendEvent = <T extends object,>(message: string, data: T) => {
+        console.log('Event emitted:', message, data);
+    };
+
+    return { queue, currentVideo, loading, sendEvent };
 };
+
