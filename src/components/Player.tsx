@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 
 import { ActiveVideo } from '../types/api';
-import { send } from 'vite';
+import { debounce } from 'lodash';
 
 
 declare global {
@@ -22,9 +22,6 @@ const Player: React.FC<PlayerEvents> = ({ item, timestamp, sendEvent, isPaused }
 
     const isYouTubeAPIReady = useRef(false);
     const [isLoading, setIsLoading] = useState(true);
-
-
-    const [isSeeked, setIsSeeked] = useState(false);
 
 
 
@@ -93,17 +90,25 @@ const Player: React.FC<PlayerEvents> = ({ item, timestamp, sendEvent, isPaused }
     }, [item]);
 
     useEffect(() => {
-        const checkSeek = setInterval(() => {
+        const debouncedSendEvent = debounce((currentTime: number) => {
+            sendEvent('seek', { timestamp: currentTime });
+        }, 300);
+
+        const checkSeek = () => {
             if (playerRef.current && item !== null) {
                 const currentTime = playerRef.current.getCurrentTime();
                 if (Math.abs(currentTime - timestamp) > 1) {
-                    sendEvent('seek', { timestamp: currentTime });
+                    debouncedSendEvent(currentTime);
                 }
             }
-        }, 1000);
+            requestAnimationFrame(checkSeek);
+        };
+
+        const animationFrameId = requestAnimationFrame(checkSeek);
 
         return () => {
-            clearInterval(checkSeek);
+            cancelAnimationFrame(animationFrameId);
+            debouncedSendEvent.cancel();
         };
     }, [item]);
 
