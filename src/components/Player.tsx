@@ -77,15 +77,17 @@ const Player: React.FC<PlayerEvents> = ({ item, timestamp, sendEvent, isPaused }
             }
         };
 
-        if (!window.YT && item !== null) {
-            loadYouTubeAPI();
-            window.onYouTubeIframeAPIReady = onYouTubeIframeAPIReady;
-        } else {
-            onYouTubeIframeAPIReady();
-        }
+        if (item !== null) {
+            if (!window.YT && item !== null) {
+                loadYouTubeAPI();
+                window.onYouTubeIframeAPIReady = onYouTubeIframeAPIReady;
+            } else {
+                onYouTubeIframeAPIReady();
+            }
 
-        if (playerRef.current && item !== null) {
-            changeVideo(item.url, timestamp);
+            if (playerRef.current && item !== null) {
+                changeVideo(item.url, timestamp);
+            }
         }
     }, [item]);
 
@@ -116,7 +118,7 @@ const Player: React.FC<PlayerEvents> = ({ item, timestamp, sendEvent, isPaused }
 
 
     const stateChange = (event: YT.OnStateChangeEvent) => {
-        if (playerRef.current) {
+        if (playerRef.current && item !== null) {
             if (event.data === YT.PlayerState.PAUSED) {
                 sendEvent('pause', { timestamp: playerRef.current.getCurrentTime() });
             }
