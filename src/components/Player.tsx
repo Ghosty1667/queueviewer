@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 
 import { ActiveVideo } from '../types/api';
+import { send } from 'vite';
 
 
 declare global {
@@ -15,12 +16,17 @@ interface PlayerEvents extends ActiveVideo {
 
 
 
-const Player: React.FC<PlayerEvents> = ({ item, timestamp, sendEvent }) => {
+const Player: React.FC<PlayerEvents> = ({ item, timestamp, sendEvent, isPaused }) => {
     const iframeRef = useRef<HTMLIFrameElement>(null)
     const playerRef = useRef<YT.Player | null>(null)
 
     const isYouTubeAPIReady = useRef(false);
     const [isLoading, setIsLoading] = useState(true);
+
+
+    const [isSeeked, setIsSeeked] = useState(false);
+
+
 
     useEffect(() => {
 
@@ -46,11 +52,12 @@ const Player: React.FC<PlayerEvents> = ({ item, timestamp, sendEvent }) => {
                 events: {
                     onReady: OnPlayerReady,
                     onStateChange: stateChange,
-
                 },
             }
             );
         };
+
+
 
 
         const OnPlayerReady = (event: YT.PlayerEvent) => {
@@ -64,43 +71,57 @@ const Player: React.FC<PlayerEvents> = ({ item, timestamp, sendEvent }) => {
                     playerRef.current.loadVideoById(videoId);
                 }
                 playerRef.current.seekTo(timestamp, true);
+                if (isPaused) {
+                    playerRef.current.pauseVideo();
+                }
+                else {
+                    playerRef.current.playVideo();
+                }
             }
         };
 
-        if (!window.YT) {
+        if (!window.YT && item !== null) {
             loadYouTubeAPI();
             window.onYouTubeIframeAPIReady = onYouTubeIframeAPIReady;
         } else {
             onYouTubeIframeAPIReady();
         }
 
-        if (playerRef.current) {
+        if (playerRef.current && item !== null) {
             changeVideo(item.url, timestamp);
         }
     }, [item]);
+
+    useEffect(() => {
+        const checkSeek = setInterval(() => {
+            if (playerRef.current && item !== null) {
+                const currentTime = playerRef.current.getCurrentTime();
+                if (Math.abs(currentTime - timestamp) > 1) {
+                    sendEvent('seek', { timestamp: currentTime });
+                }
+            }
+        }, 1000);
+
+        return () => {
+            clearInterval(checkSeek);
+        };
+    }, [item]);
+
+
 
 
     const stateChange = (event: YT.OnStateChangeEvent) => {
         if (playerRef.current) {
             if (event.data === YT.PlayerState.PAUSED) {
-                const pauseStartTime = Date.now();
-                const pauseInterval = setInterval(() => {
-                    const pauseDuration = Date.now() - pauseStartTime;
-                    if (pauseDuration >= 500) {
-                        sendEvent('pause', { timestamp: playerRef.current.getCurrentTime() });
-                        clearInterval(pauseInterval);
-                        console.log('pause');
-                    }
-                }, 1000);
-
-                playerRef.current.addEventListener('onStateChange', (stateChangeEvent: YT.OnStateChangeEvent) => {
-                    if (stateChangeEvent.data !== YT.PlayerState.PAUSED) {
-                        clearInterval(pauseInterval);
-                    }
-                });
+                sendEvent('pause', { timestamp: playerRef.current.getCurrentTime() });
+            }
+            if (event.data === YT.PlayerState.PLAYING) {
+                sendEvent('unpause', { timestamp: playerRef.current.getCurrentTime() });
             }
         }
     }
+
+
 
     return (
         <div className="w-full max-h-screen aspect-video">

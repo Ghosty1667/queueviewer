@@ -11,7 +11,7 @@ export interface QueueItem {
 }
 
 export interface ActiveVideo {
-    item : QueueItem;
+    item? : QueueItem;
     isPaused: boolean;
     timestamp: number;
 }
