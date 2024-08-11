@@ -1,7 +1,7 @@
 /// <reference types="vite/client" />
 
 interface ImportMetaEnv {
-  readonly RENDERER_VITE_SOCKET_URL: string
+  readonly VITE_SOCKET_URL: string
   // more env variables...
 }
 
