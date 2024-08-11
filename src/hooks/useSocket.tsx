@@ -11,6 +11,7 @@ const useSocket = (url: string): useSocketProps => {
     const [currentVideo, setCurrentVideo] = useState<ActiveVideo | null>(null);
 
     useEffect(() => {
+        console.log('Connecting to socket:', url);
         const socket: Socket = io(url);
 
         socket.on('data', (jsonData: Queue) => {

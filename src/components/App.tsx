@@ -16,7 +16,7 @@ const App: React.FC = () => {
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     //@ts-ignore
-    const { queue, currentVideo, loading, sendEvent } = useSocket((import.meta as unknown).env.SOCKET_URL || 'http://localhost:3000/');
+    const { queue, currentVideo, loading, sendEvent } = useSocket(import.meta.env.VITE_SOCKET_URL || 'http://localhost:3000/');
 
     return (
         <div className="flex flex-col h-screen bg-gray-800">

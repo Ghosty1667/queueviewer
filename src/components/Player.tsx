@@ -91,17 +91,23 @@ const Player: React.FC<PlayerEvents> = ({ item, timestamp, sendEvent, isPaused }
         }
     }, [item]);
 
+    const previousTimeRef = useRef<number | null>(null);
+
     useEffect(() => {
-        const debouncedSendEvent = debounce((currentTime: number) => {
-            sendEvent('seek', { timestamp: currentTime });
+        const debouncedSendEvent = debounce((timeDifference: number) => {
+            sendEvent('seek', { timestamp: timeDifference });
         }, 300);
 
         const checkSeek = () => {
             if (playerRef.current && item !== null) {
                 const currentTime = playerRef.current.getCurrentTime();
-                if (Math.abs(currentTime - timestamp) > 1) {
-                    debouncedSendEvent(currentTime);
+                if (previousTimeRef.current !== null) {
+                    const timeDifference = currentTime - previousTimeRef.current;
+                    if (Math.abs(timeDifference) > 1) {
+                        debouncedSendEvent(currentTime);
+                    }
                 }
+                previousTimeRef.current = currentTime;
             }
             requestAnimationFrame(checkSeek);
         };
