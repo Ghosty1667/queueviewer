@@ -1,8 +1,8 @@
 {
   "name": "queueviewer",
   "productName": "queueviewer",
-  "version": "1.0.0",
-  "description": "My Electron application description",
+  "version": "0.1.0",
+  "description": "A player to sync video with many clients",
   "main": ".vite/build/main.js",
   "scripts": {
     "start": "electron-forge start",
