@@ -20,7 +20,7 @@ const App: React.FC = () => {
 
     return (
         <div className="flex flex-col h-screen bg-gray-800">
-            {loading ? <h1 className="text-white text-4xl w-full shrink-0 text-center mt-5 animate-pulse">Loading...</h1> :
+            {loading ? <h1 className="text-white text-4xl w-full h-2/4 shrink-0 text-center mt-auto animate-pulse">Loading...</h1> :
                 <div className="flex overflow-hidden">
                     <Player {...currentVideo} sendEvent={sendEvent} />
                     <SideBar sendEvent={sendEvent}>
