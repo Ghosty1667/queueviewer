@@ -1,12 +1,10 @@
 /// <reference types="vite/client" />
 
 interface ImportMetaEnv {
-  readonly VITE_DUMMY_DATA: boolean;
-  readonly VITE_SOCKET_URL: string;
-  // Add other environment variables here
+  readonly VITE_SOCKET_URL: string
+  // more env variables...
 }
 
 interface ImportMeta {
-  readonly env: ImportMetaEnv;
+  readonly env: ImportMetaEnv
 }
-

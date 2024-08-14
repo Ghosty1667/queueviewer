@@ -16,22 +16,18 @@ const App: React.FC = () => {
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     //@ts-ignore
-    const { queue, currentVideo, loading, sendEvent } = useSocket((import.meta as unknown).env.SOCKET_URL || 'http://localhost:3000/');
+    const { queue, currentVideo, loading, sendEvent } = useSocket(import.meta.env.VITE_SOCKET_URL || 'http://localhost:3000/');
 
     return (
         <div className="flex flex-col h-screen bg-gray-800">
-
-            {loading ? (<p>Loading</p>)
-                : (
-                    queue && (<div className="flex overflow-hidden">
-
-                        <Player {...currentVideo} sendEvent={sendEvent} />
-                        <SideBar sendEvent={sendEvent}>
-                            <QueueList sendEvent={sendEvent} items={queue} />
-                        </SideBar>
-
-                    </div>)
-                )}
+            {loading ? <h1 className="text-white text-4xl w-full h-2/4 shrink-0 text-center mt-auto animate-pulse">Loading...</h1> :
+                <div className="flex overflow-hidden">
+                    <Player {...currentVideo} sendEvent={sendEvent} />
+                    <SideBar sendEvent={sendEvent}>
+                        <QueueList sendEvent={sendEvent} items={queue} />
+                    </SideBar>
+                </div>
+            }
 
         </div>
     )

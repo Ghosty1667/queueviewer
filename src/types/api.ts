@@ -12,8 +12,8 @@ export interface QueueItem {
 
 export interface ActiveVideo {
     item? : QueueItem;
-    isPaused: boolean;
-    timestamp: number;
+    isPaused?: boolean;
+    timestamp?: number;
 }
 
 export interface useSocketProps {

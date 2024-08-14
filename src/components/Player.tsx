@@ -77,29 +77,37 @@ const Player: React.FC<PlayerEvents> = ({ item, timestamp, sendEvent, isPaused }
             }
         };
 
-        if (!window.YT && item !== null) {
-            loadYouTubeAPI();
-            window.onYouTubeIframeAPIReady = onYouTubeIframeAPIReady;
-        } else {
-            onYouTubeIframeAPIReady();
-        }
+        if (item !== null) {
+            if (!window.YT) {
+                loadYouTubeAPI();
+                window.onYouTubeIframeAPIReady = onYouTubeIframeAPIReady;
+            } else {
+                onYouTubeIframeAPIReady();
+            }
 
-        if (playerRef.current && item !== null) {
-            changeVideo(item.url, timestamp);
+            if (playerRef.current && item !== null) {
+                changeVideo(item.url, timestamp);
+            }
         }
     }, [item]);
 
+    const previousTimeRef = useRef<number | null>(null);
+
     useEffect(() => {
-        const debouncedSendEvent = debounce((currentTime: number) => {
-            sendEvent('seek', { timestamp: currentTime });
+        const debouncedSendEvent = debounce((timeDifference: number) => {
+            sendEvent('seek', { timestamp: timeDifference });
         }, 300);
 
         const checkSeek = () => {
             if (playerRef.current && item !== null) {
                 const currentTime = playerRef.current.getCurrentTime();
-                if (Math.abs(currentTime - timestamp) > 1) {
-                    debouncedSendEvent(currentTime);
+                if (previousTimeRef.current !== null) {
+                    const timeDifference = currentTime - previousTimeRef.current;
+                    if (Math.abs(timeDifference) > 1) {
+                        debouncedSendEvent(currentTime);
+                    }
                 }
+                previousTimeRef.current = currentTime;
             }
             requestAnimationFrame(checkSeek);
         };
@@ -116,7 +124,7 @@ const Player: React.FC<PlayerEvents> = ({ item, timestamp, sendEvent, isPaused }
 
 
     const stateChange = (event: YT.OnStateChangeEvent) => {
-        if (playerRef.current) {
+        if (playerRef.current && item !== null) {
             if (event.data === YT.PlayerState.PAUSED) {
                 sendEvent('pause', { timestamp: playerRef.current.getCurrentTime() });
             }
@@ -129,10 +137,10 @@ const Player: React.FC<PlayerEvents> = ({ item, timestamp, sendEvent, isPaused }
 
 
     return (
-        <div className="w-full max-h-screen aspect-video">
+        <div className="w-full max-h-screen aspect-video bg-gray-700">
             <div
                 ref={iframeRef}
-                className={`w-full h-full aspect-video overflow-hidden ${isLoading} ? 'animate-pulse' : ''`}
+                className={`w-full h-full overflow-hidden`}
             ></div>
         </div>
     );

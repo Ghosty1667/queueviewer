@@ -69,26 +69,27 @@ const QueueList: React.FC<QueueListProps> = ({ items, sendEvent }) => {
 
     return (
         <div>
-            {queueItems.map((item, index) => (
-                <button
-                    key={index}
-                    className="flex items-center w-full justify-between space-x-4 bg-gray-700 hover:bg-gray-500 text-white p-2"
-                    draggable
-                    onClick={() => { handleChange(item) }}
-                    onDragStart={(e) => handleDragStart(e, index)}
-                    onDragOver={handleDragOver}
-                    onDragLeave={handleDragLeave}
-                    onDrop={(e) => handleDrop(e, index)}
-                >
-                    <img src={item.thumbnail} alt="Thumbnail" className="w-16 h-16" />
-                    <div className='truncate'>
-                        <p>{item.name}</p>
-                    </div>
-                    <div onClick={() => handleDelete(item)} className="btn btn-danger hover:text-red-600" style={{ fontSize: "32px" }}>
-                        <i className="bi bi-x"></i>
-                    </div>
-                </button>
-            ))
+            {queueItems === null || queueItems.length === 0 ? <h1 className="text-white w-full text-center">No items in queue</h1> :
+                queueItems.map((item, index) => (
+                    <button
+                        key={index}
+                        className="flex items-center w-full justify-between space-x-4 bg-gray-700 hover:bg-gray-500 text-white p-2"
+                        draggable
+                        onClick={() => { handleChange(item) }}
+                        onDragStart={(e) => handleDragStart(e, index)}
+                        onDragOver={handleDragOver}
+                        onDragLeave={handleDragLeave}
+                        onDrop={(e) => handleDrop(e, index)}
+                    >
+                        <img src={item.thumbnail} alt="Thumbnail" className="w-16 h-16" />
+                        <div className='truncate'>
+                            <p>{item.name}</p>
+                        </div>
+                        <div onClick={() => handleDelete(item)} className="btn btn-danger hover:text-red-600" style={{ fontSize: "32px" }}>
+                            <i className="bi bi-x"></i>
+                        </div>
+                    </button>
+                ))
             }
         </div >
     );
