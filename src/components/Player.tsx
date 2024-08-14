@@ -78,7 +78,7 @@ const Player: React.FC<PlayerEvents> = ({ item, timestamp, sendEvent, isPaused }
         };
 
         if (item !== null) {
-            if (!window.YT && item !== null) {
+            if (!window.YT) {
                 loadYouTubeAPI();
                 window.onYouTubeIframeAPIReady = onYouTubeIframeAPIReady;
             } else {
