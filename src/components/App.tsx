@@ -21,17 +21,12 @@ const App: React.FC = () => {
     return (
         <div className="flex flex-col h-screen bg-gray-800">
 
-            {loading ? (<p>Loading</p>)
-                : (
-                    queue && (<div className="flex overflow-hidden">
-
-                        <Player {...currentVideo} sendEvent={sendEvent} />
-                        <SideBar sendEvent={sendEvent}>
-                            <QueueList sendEvent={sendEvent} items={queue} />
-                        </SideBar>
-
-                    </div>)
-                )}
+            <div className="flex overflow-hidden">
+                <Player {...currentVideo} sendEvent={sendEvent} />
+                <SideBar sendEvent={sendEvent}>
+                    <QueueList sendEvent={sendEvent} items={queue} />
+                </SideBar>
+            </div>
 
         </div>
     )

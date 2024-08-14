@@ -137,10 +137,10 @@ const Player: React.FC<PlayerEvents> = ({ item, timestamp, sendEvent, isPaused }
 
 
     return (
-        <div className="w-full max-h-screen aspect-video">
+        <div className="w-full max-h-screen aspect-video bg-gray-700">
             <div
                 ref={iframeRef}
-                className={`w-full h-full aspect-video overflow-hidden ${isLoading} ? 'animate-pulse' : ''`}
+                className={`w-full h-full overflow-hidden`}
             ></div>
         </div>
     );

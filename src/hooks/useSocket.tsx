@@ -15,7 +15,9 @@ const useSocket = (url: string): useSocketProps => {
         const socket: Socket = io(url);
 
         socket.on('data', (jsonData: Queue) => {
-            handleData(jsonData);
+            setQueue(jsonData.items);
+            setCurrentVideo(jsonData.activeVideo);
+            setLoading(false);
         });
 
         socket.on('video-update', (jsonData: ActiveVideo) => {
@@ -29,18 +31,6 @@ const useSocket = (url: string): useSocketProps => {
             socket.disconnect();
         };
     }, [url]);
-
-
-
-    const handleData = (jsonData: Queue | ActiveVideo) => {
-        if ('items' in jsonData) {
-            setQueue(jsonData.items);
-            setCurrentVideo(jsonData.activeVideo);
-        } else {
-            setCurrentVideo(jsonData);
-        }
-        setLoading(false);
-    };
 
     const emitEvent = (event: string, data: object) => {
         return new Promise((resolve, reject) => {
